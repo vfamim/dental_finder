@@ -10,3 +10,9 @@ empresa Real, que contém informações sobre a aquisição de clínicas. Este t
 objetiva ver como você se comporta em uma situação real de trabalho, e com
 problemas que encontrará diariamente dentro de nosso time.
 
+## Arquitetura
+
+- Ingestão de dados com Python
+- Banco de dados Postgres localizado localmente
+- Deploy com dockers
+- Transformação com dbt (data build tool)
