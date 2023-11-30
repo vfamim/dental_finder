@@ -1,4 +1,4 @@
-{{ config(materialized='table') }}
+{{ config(materialized='view') }}
 
 
 SELECT 
@@ -32,5 +32,5 @@ SELECT
     ,cast("HAS_STARTED_ACCREDITATION_AND_NOT_FINISHED" as boolean) as has_started_accreditation_and_not_finished
     ,cast("IS_ACCREDITATION_APPROVED" as boolean) as is_accreditation_approved
     ,cast("IS_ACCREDITATION_REPROVED" as boolean) as is_accreditation_reproved
-FROM clinics 
+FROM {{ source('staging', 'clinics') }}
 WHERE "IS_CHAIN_CLINIC" = false

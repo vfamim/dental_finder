@@ -1,3 +1,5 @@
+{{ config(materialized='view') }}
+
 SELECT 
     cast("CLINIC_ID" as integer) as clinic_id,
     cast("STRIPE_SUBSCRIPTION_ID" as varchar) as subscription,
@@ -17,5 +19,4 @@ SELECT
     cast("FIRST_PAYMENT_PROMOTION_CODE" as varchar) as fist_payment_promotion_code,
     cast("FIRST_PAYMENT_COUPON_ID" as varchar) as fist_payment_coupon_id,
     cast("FIRST_PAYMENT_AMOUNT_OFF_2" as double precision) as first_payment_amount_off_2
-    FROM subscriptions
-
+    FROM {{ source('staging', 'subscriptions') }}

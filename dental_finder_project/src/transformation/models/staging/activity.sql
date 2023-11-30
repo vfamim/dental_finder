@@ -1,4 +1,4 @@
-{{ config(materialized='table') }}
+{{ config(materialized='view') }}
 
 select
     cast("CLINIC_ID" as integer) as clinic_id
@@ -13,4 +13,4 @@ select
     ,cast("IS_DELETION_ACTIVITY" as boolean) as is_deletion_activity
     ,cast("IS_MANAGEMENT_ACTIVITY" as boolean) as is_management_activity
     ,cast("IS_FINANCE_ACTIVITY" as boolean) as is_finance_activity
-from activity
+from {{ source('staging', 'activity')}}

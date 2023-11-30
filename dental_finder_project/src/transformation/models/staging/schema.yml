@@ -1,0 +1,38 @@
+---
+version: 2
+
+sources:
+  - name: staging
+    database: real
+    schema: public
+
+    tables:
+      - name: activity
+      - name: clinics
+      - name: subscriptions
+
+models:
+  - name: activity
+    columns:
+      - name: clinic_id
+        description: "Primary key for this table"
+        tests:
+          - dbt_constraints.primary_key
+          - unique
+          - not_null
+  - name: clinics
+    columns:
+      - name: clinic_id
+        description: "Primary key for this table"
+        tests:
+          - dbt_constraints.primary_key
+          - unique
+          - not_null
+  - name: subscriptions
+    columns:
+      - name: clinic_id
+        description: "Primary key for this table"
+        tests:
+          - dbt_constraints.primary_key
+          - unique
+          - not_null
