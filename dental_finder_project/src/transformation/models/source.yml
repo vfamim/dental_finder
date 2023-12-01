@@ -1,0 +1,26 @@
+---
+version: 2
+
+sources:
+  - name: staging
+    database: real
+    schema: public
+
+    tables:
+      - name: activity
+        description: Activity made by clients with datetime.
+        columns:
+          - name: clinic_id
+            description: Primary key for client
+
+      - name: clinics
+        description: Info about clinics and timeline, trial and credential
+        columns:
+          - name: clinic_id
+            description: Primary key for client
+
+      - name: subscriptions
+        description: Subscribe information
+        columns:
+          - name: clinic_id
+            description: Primary key for client
