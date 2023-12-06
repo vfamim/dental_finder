@@ -1,0 +1,128 @@
+---
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+x-superset-image: &superset-image apachesuperset.docker.scarf.sh/apache/superset:${TAG:-latest-dev}
+# x-superset-user: &superset-user root
+x-superset-depends-on: &superset-depends-on
+  - pgdatabase
+  - redis
+x-superset-volumes: &superset-volumes
+  - ~/.superset/docker:/app/docker
+  - ~/.superset/superset_home:/app/superset_home
+
+version: "3.7"
+services:
+  # redis:
+  #   image: redis:7
+  #   container_name: superset_cache
+  #   restart: unless-stopped
+  #   ports:
+  #     - "127.0.0.1:6379:6379"
+  #   volumes:
+  #     - redis:/data
+
+  pgdatabase:
+    env_file: ./dental_finder_project/.env
+    image: postgres:13
+    container_name: postgres_db
+    restart: unless-stopped
+    ports:
+      - "5431:5432"
+    environment:
+      - POSTGRES_USER=$(POSTGRES_USER)
+      - POSTGRES_PASSWORD=$(POSTGRES_PASSWORD)
+      - POSTGRES_DB=$(POSTGRES_DB)
+    volumes:
+      - ./dental_finder_project/data/real_postgres_data:/var/lib/postgresql/data:rw
+      # - ~/.superset/docker/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+    networks:
+      - superset-net
+
+  pgadmin:
+    env_file: ./dental_finder_project/.env
+    image: dpage/pgadmin4
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=$(PGADMIN_DEFAULT_EMAIL)
+      - PGADMIN_DEFAULT_PASSWORD=$(PGADMIN_DEFAULT_PASSWORD)
+    volumes:
+      - "./dental_finder_project/data/data_pgadmin:/var/lib/pgadmin"
+    ports:
+      - "8080:80"
+    depends_on:
+      - pgdatabase
+
+networks:
+  superset-net:
+    driver: brigde
+#
+#   superset:
+#     env_file: dental_finder_project/.env
+#     image: *superset-image
+#     container_name: superset_app
+#     # command: ["/app/docker/docker-bootstrap.sh", "app-gunicorn"]
+#     restart: unless-stopped
+#     ports:
+#       - 8088:8088
+#     # extra_hosts:
+#     #   - "host.docker.internal:host-gateway"
+#     # user: *superset-user
+#     depends_on: *superset-depends-on
+#     # volumes: *superset-volumes
+#     volumes:
+#       - superset_home:/app/superset_home
+#     environment:
+#       - ADMIN_USERNAME=admin
+#       - ADMIN_EMAIL=admin@superset.com
+#       - ADMIN_PASSWORD=admin
+#     #   # CYPRESS_CONFIG: "${CYPRESS_CONFIG}"
+#     #   SUPERSET_DATABASE_URI: postgresql+psycopg2://root:root@pgdatabase:5432/real
+#
+#   # superset-init:
+#   #   image: *superset-image
+#   #   container_name: superset_init
+#   #   # command: ["/app/docker/docker-bootstrap.sh", "worker"]
+#   #   env_file: dental_finder_project/.env
+#   #   depends_on: *superset-depends-on
+#   #   user: "root"
+#   #   volumes: *superset-volumes
+#   #   environment:
+#   #     CYPRESS_CONFIG: "${CYPRESS_CONFIG}"
+#   #   healthcheck:
+#   #     test:
+#   #       [
+#   #         "CMD-SHELL",
+#   #         "celery -A superset.tasks.celery_app:app inspect ping -d celery@$$HOSTNAME",
+#   #       ]
+#   #
+#   # superset-worker-beat:
+#   #   image: *superset-image
+#   #   container_name: superset_worker_beat
+#   #   # command: ["/app/docker/docker-bootstrap.sh", "beat"]
+#   #   env_file: dental_finder_project/.env
+#   #   restart: unless-stopped
+#   #   depends_on: *superset-depends-on
+#   #   user: "root"
+#   #   volumes: *superset-volumes
+#   #   healthcheck:
+#   #     disable: true
+#
+# volumes:
+#   superset_home:
+#     external: false
+#   db_home:
+#     external: false
+#   redis:
+#     external: false
